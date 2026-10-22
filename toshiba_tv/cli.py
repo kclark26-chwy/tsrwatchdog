@@ -38,6 +38,12 @@ def main(argv=None):
     c = sub.add_parser("cast"); c.add_argument("action", choices=["status", "vol", "mute", "unmute", "play", "pause", "stop", "quit"])
     c.add_argument("value", nargs="?", help="volume 0-1 for `vol`")
 
+    m = sub.add_parser("matter")
+    m.add_argument("action", choices=["commission", "nodes", "node", "on", "off", "toggle", "play", "pause", "stop", "key"])
+    m.add_argument("value", nargs="?", help="setup code for `commission`, key name for `key`")
+    m.add_argument("--server", default="ws://127.0.0.1:5580/ws", help="python-matter-server WS URL")
+    m.add_argument("--node", type=int, help="commissioned node id (required except for commission/nodes)")
+
     a = ap.parse_args(argv)
 
     if a.cmd == "discover":
@@ -47,6 +53,8 @@ def main(argv=None):
         _dial(a); return
     if a.cmd == "cast":
         _cast(a); return
+    if a.cmd == "matter":
+        _matter(a); return
 
     if not a.host:
         ap.error("--host is required (run `discover` first)")
@@ -106,6 +114,33 @@ def _cast(a):
         cast.mute(False)
     elif a.action in ("play", "pause", "stop", "quit"):
         getattr(cast, a.action)()
+
+
+def _matter(a):
+    from .matter import MatterServer
+    m = MatterServer(a.server)
+    try:
+        if a.action == "commission":
+            print("node_id:", m.commission(a.value))
+        elif a.action == "nodes":
+            print(json.dumps(m.nodes(), indent=2))
+        elif a.action == "node":
+            print(json.dumps(m.endpoints(a.node), indent=2))
+        else:
+            if a.node is None:
+                raise SystemExit("--node is required")
+            if a.action == "on":
+                m.power_on(a.node)
+            elif a.action == "off":
+                m.power_off(a.node)
+            elif a.action == "toggle":
+                m.power_toggle(a.node)
+            elif a.action in ("play", "pause", "stop"):
+                getattr(m, a.action)(a.node)
+            elif a.action == "key":
+                m.key(a.node, a.value)
+    finally:
+        m.close()
 
 
 if __name__ == "__main__":

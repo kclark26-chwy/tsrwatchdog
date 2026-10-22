@@ -45,6 +45,25 @@ python -m toshiba_tv.cli --host 192.168.1.50 cast vol 0.3
 python -m toshiba_tv.cli --host 192.168.1.50 cast pause
 ```
 
+**Matter** — cloud-free power / transport / navigation. Needs a Matter controller;
+the simplest is [python-matter-server](https://github.com/home-assistant-libs/python-matter-server)
+as a WebSocket service (`pip install websocket-client` for the client here):
+```
+# one-time: run the controller
+docker run -d --name matter-server --network host -v matter-data:/data \
+  ghcr.io/home-assistant-libs/python-matter-server:stable
+
+# one-time: pair the TV (get the setup code on the TV:
+#   Settings > Device & Software > enable Matter / "Add to Matter", it shows a code)
+python -m toshiba_tv.cli matter commission MT:xxxxxxxxxxxx
+
+# then control it (node id is printed by `commission` / `matter nodes`)
+python -m toshiba_tv.cli matter off  --node 4
+python -m toshiba_tv.cli matter on   --node 4
+python -m toshiba_tv.cli matter key vol_up --node 4
+python -m toshiba_tv.cli matter node --node 4     # dump endpoints/clusters
+```
+
 See [`docs/FINDINGS.md`](docs/FINDINGS.md) for the full reverse-engineering writeup
 (ports, services, APK analysis) and [`docs/ir_emitter_directive.proto`](docs/ir_emitter_directive.proto)
 for the reconstructed IR blaster directive format.
