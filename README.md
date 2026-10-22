@@ -3,9 +3,11 @@
 Control and inspect a Toshiba Fire TV edition from Python. Run it from a machine on the same LAN as the TV, not from a cloud container.
 
 ## One-time TV setup
-1. Settings → My Fire TV → About → click the device name 7 times to unlock Developer Options.
-2. Settings → My Fire TV → Developer Options → turn on **ADB debugging**.
-3. Find the IP: Settings → My Fire TV → About → Network.
+1. Settings → **Device & Software** → **About** → press OK on the model name 7 times until it says "You are now a developer".
+2. Back in **Device & Software** → **Developer Options** (now visible) → turn on **ADB Debugging**.
+3. Find the IP: **Device & Software** → **About** → **Network**.
+
+(Older Fire OS builds put the same items under "My Fire TV" instead of "Device & Software".)
 
 ## Use
 ```
