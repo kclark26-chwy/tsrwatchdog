@@ -28,8 +28,11 @@ Everything else listening was loopback-only or an ephemeral per-process port.
 
 (From `dumpsys activity services`.)
 
-- `com.amazon.tv.mattercohost/.ContentAppAgentService` — **Matter** content app is
-  live. Standards-based local control (power / input / volume) with no Amazon cloud.
+- `com.amazon.tv.mattercohost/.ContentAppAgentService` — **Matter Casting** only.
+  The TV is a Matter *Casting Video Player* (a receiver that phone apps cast to,
+  showing a PIN on connect). It is **not** a commissionable Matter device: there is
+  no `MT:` setup code in Settings and it cannot be added to a home controller for
+  power / volume. Verified on this unit — no Matter entry exists in Settings.
 - `com.amazon.tv.devicecontrol/.quicksettings.SoundbarProvider` — HDMI-CEC + IR
   control of external gear (the "Equipment Control" settings page).
 - `com.apple.airplay.amazon.airplay/.EniraService` — AirPlay.
@@ -70,11 +73,13 @@ documentation artifact rather than a local control vector.
 ## Practical control paths (recommended order)
 
 1. **ADB** (port 5555) — working today. Remote keys, launch apps, inspect state,
-   screenshots. See the `toshiba_tv` package in this repo.
-2. **Matter** — cleanest local, cloud-free power/input/volume. Needs a Matter
-   controller.
-3. **Google Cast** (`pychromecast`) — playback + volume, no ADB.
-4. **DIAL** — launch streaming apps by name over HTTP.
+   screenshots, and wake from sleep (`input keyevent WAKEUP`). See the `toshiba_tv`
+   package in this repo.
+2. **Google Cast** (`pychromecast`) — playback + volume, no ADB.
+3. **DIAL** — launch streaming apps by name over HTTP.
+
+**Not viable on this unit:** Matter (Casting-only, see above). The `toshiba_tv.matter`
+module is kept as a generic python-matter-server client but does not apply to this TV.
 
 ## Scope / safety
 

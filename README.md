@@ -45,23 +45,17 @@ python -m toshiba_tv.cli --host 192.168.1.50 cast vol 0.3
 python -m toshiba_tv.cli --host 192.168.1.50 cast pause
 ```
 
-**Matter** — cloud-free power / transport / navigation. Needs a Matter controller;
-the simplest is [python-matter-server](https://github.com/home-assistant-libs/python-matter-server)
-as a WebSocket service (`pip install websocket-client` for the client here):
+**Matter — does not apply to this TV.** Fire TV's Matter support is *Matter Casting*
+only (the TV is a receiver phone apps cast to); it is not a commissionable device and
+shows no `MT:` setup code in Settings, so it can't be paired to a controller for
+power/volume. The `toshiba_tv.matter` module and `matter` CLI command are a generic
+[python-matter-server](https://github.com/home-assistant-libs/python-matter-server)
+client kept for devices that *are* commissionable — not for this unit.
+
+**Power on from sleep** — use ADB; the TV keeps Wi-Fi up in standby for Alexa:
 ```
-# one-time: run the controller
-docker run -d --name matter-server --network host -v matter-data:/data \
-  ghcr.io/home-assistant-libs/python-matter-server:stable
-
-# one-time: pair the TV (get the setup code on the TV:
-#   Settings > Device & Software > enable Matter / "Add to Matter", it shows a code)
-python -m toshiba_tv.cli matter commission MT:xxxxxxxxxxxx
-
-# then control it (node id is printed by `commission` / `matter nodes`)
-python -m toshiba_tv.cli matter off  --node 4
-python -m toshiba_tv.cli matter on   --node 4
-python -m toshiba_tv.cli matter key vol_up --node 4
-python -m toshiba_tv.cli matter node --node 4     # dump endpoints/clusters
+python -m toshiba_tv.cli --host 192.168.1.50 key wakeup
+python -m toshiba_tv.cli --host 192.168.1.50 key sleep
 ```
 
 See [`docs/FINDINGS.md`](docs/FINDINGS.md) for the full reverse-engineering writeup

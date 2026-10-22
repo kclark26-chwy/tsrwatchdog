@@ -1,8 +1,10 @@
-"""Matter control for the Fire TV (cloud-free power / transport / navigation).
+"""Generic Matter client (python-matter-server) — NOT applicable to the Fire TV.
 
-The TV runs `com.amazon.tv.mattercohost` (a Matter "Casting Video Player"), so it
-can be commissioned onto a Matter fabric and driven locally with no Amazon cloud
-and no ADB.
+The Fire TV's `com.amazon.tv.mattercohost` is Matter *Casting* only: the TV is a
+Casting Video Player that phone apps cast to. It is not a commissionable Matter
+device, shows no `MT:` setup code, and cannot be paired to a controller for
+power/volume. This module is kept as a working client for devices that are
+commissionable (lights, plugs, other TVs that expose it).
 
 Matter needs a real controller (the CHIP stack). Rather than vendor that here, this
 module is a thin synchronous client for **python-matter-server**, which wraps the
