@@ -94,7 +94,8 @@ for devices that *are* commissionable; it does not apply to this TV.
 
 ## DIAL notes (from a live `dial list`)
 
-- `Netflix` → reports a state (`running`/`stopped`) — fully working.
+- `Netflix` → reports a state (`running`/`stopped`) — fully working. Verified
+  transition on this unit: `stopped` → `dial launch` returned **HTTP 201** → `running`.
 - `YouTube` → HTTP **403** on GET. This is YouTube's known DIAL behaviour (it
   refuses status queries without its own headers); the app is present and
   `POST /YouTube` (launch) still works. Reported as `present-403`.
