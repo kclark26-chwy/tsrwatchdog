@@ -20,6 +20,33 @@ python -m toshiba_tv.cli --host 192.168.1.50 launch com.netflix.ninja
 python -m toshiba_tv.cli --host 192.168.1.50 shell "dumpsys package | head"
 python -m toshiba_tv.cli --host 192.168.1.50 shot out.png
 ```
-`ADB shell` gives you the same view the platform tools would: `getprop`, `pm list packages`, `dumpsys`, `logcat`, and `pull` for APKs under `/system/app` and `/data/app` (for static analysis with jadx).
+`ADB shell` gives you the same view the platform tools would: `getprop`, `pm list packages`, `dumpsys`, `logcat`. To pull an APK for static analysis (jadx):
+```
+python -m toshiba_tv.cli --host 192.168.1.50 path com.amazon.tv.devicecontrol
+python -m toshiba_tv.cli --host 192.168.1.50 pull /system/.../base.apk devicecontrol.apk
+```
+
+## Cloud-free control (no ADB)
+
+These use standard LAN protocols the TV already speaks, so they work even with
+ADB debugging off.
+
+**DIAL** — launch/stop streaming apps by name over HTTP:
+```
+python -m toshiba_tv.cli --host 192.168.1.50 dial list
+python -m toshiba_tv.cli --host 192.168.1.50 dial launch YouTube
+python -m toshiba_tv.cli --host 192.168.1.50 dial stop YouTube
+```
+
+**Google Cast** — playback + volume (needs `pip install PyChromecast`):
+```
+python -m toshiba_tv.cli --host 192.168.1.50 cast status
+python -m toshiba_tv.cli --host 192.168.1.50 cast vol 0.3
+python -m toshiba_tv.cli --host 192.168.1.50 cast pause
+```
+
+See [`docs/FINDINGS.md`](docs/FINDINGS.md) for the full reverse-engineering writeup
+(ports, services, APK analysis) and [`docs/ir_emitter_directive.proto`](docs/ir_emitter_directive.proto)
+for the reconstructed IR blaster directive format.
 
 Scope: only run this against a TV you own, on a network you control.

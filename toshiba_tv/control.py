@@ -67,6 +67,11 @@ class FireTV:
         with open(path, "wb") as f:
             f.write(data if isinstance(data, bytes) else data.encode("latin1"))
 
+    def apk_path(self, package):
+        """Resolve the on-device APK path(s) for a package (for pulling)."""
+        out = self.shell(f"pm path {package}")
+        return "\n".join(l.split(":", 1)[1] for l in out.splitlines() if ":" in l)
+
     def pull(self, remote, local):
         self.dev.pull(remote, local)
 
