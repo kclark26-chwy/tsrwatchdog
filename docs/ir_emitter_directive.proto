@@ -1,0 +1,34 @@
+// Reconstructed from com.amazon.tv.devicecontrol (AFTHA004, Fire OS 7 / PS7717.5741N)
+// Source: com/amazon/infrared/protobuf/schema/IrEmitterEmitDirectivePayloadOuterClass
+// This is the payload the Fire TV's IR blaster consumes to control external gear
+// (soundbar, AVR, etc). It is delivered by Alexa's smart-home cloud "downchannel",
+// NOT a locally reachable endpoint. Reconstructed for documentation only.
+
+syntax = "proto2";
+
+message IrEmitterEmitDirectivePayload {
+  repeated IrCode ir_codes = 1;
+  optional IrPulseCountSequence ir_sequence = 2;
+  optional IdlePeriodsInMilliseconds idle_global_period = 3;
+  optional IdlePeriodsInMilliseconds idle_channel_period = 4;
+}
+
+message IrCode {
+  optional int32 carrier_frequency_hertz = 1;  // e.g. 38000 for most consumer IR
+  optional int32 duty_cycle = 2;               // percent
+  optional int32 repeat_count = 3;
+  optional int32 channel_id = 4;               // which emitter channel
+  optional IrPulseCountSequence ir_sequence = 5;
+}
+
+// Pulse/space burst pairs. default_code is sent normally; toggle_code alternates
+// on repeats for protocols (e.g. RC5/RC6) that carry a toggle bit.
+message IrPulseCountSequence {
+  optional bytes default_code = 1;
+  optional bytes toggle_code = 2;
+}
+
+message IdlePeriodsInMilliseconds {
+  optional int32 before = 1;
+  optional int32 after = 2;
+}
