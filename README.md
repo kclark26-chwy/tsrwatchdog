@@ -47,7 +47,8 @@ power/volume. The `toshiba_tv.matter` module and `matter` CLI command are a gene
 [python-matter-server](https://github.com/home-assistant-libs/python-matter-server)
 client kept for devices that *are* commissionable — not for this unit.
 
-**Power on from sleep** — use ADB; the TV keeps Wi-Fi up in standby for Alexa:
+**Power on/off** — verified on this TV. ADB stays connected in standby (Wi-Fi
+is kept up for Alexa), so sleep and wake both work:
 ```
 python -m toshiba_tv.cli --host 192.168.1.50 key wakeup
 python -m toshiba_tv.cli --host 192.168.1.50 key sleep

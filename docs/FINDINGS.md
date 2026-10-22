@@ -73,10 +73,16 @@ documentation artifact rather than a local control vector.
 ## Practical control paths (recommended order)
 
 1. **ADB** (port 5555) — working today. Remote keys, launch apps, inspect state,
-   screenshots, and wake from sleep (`input keyevent WAKEUP`). See the `toshiba_tv`
-   package in this repo.
+   screenshots, and **power control**. See the `toshiba_tv` package in this repo.
+
+   **Sleep/wake verified on this unit:** `key sleep` → `dumpsys power` reports
+   `mWakefulness=Asleep`, display `OFF`; `key wakeup` → `Awake`, display `ON`. The
+   ADB connection stays up throughout standby (the TV keeps Wi-Fi alive for Alexa),
+   so this is a reliable cloud-free power path and the replacement for the Matter
+   route that turned out not to apply.
 2. **DIAL** — launch streaming apps by name over HTTP. **Verified on this unit:**
-   the endpoint is live and answers per-app queries (`dial list`).
+   the endpoint is live, answers per-app queries (`dial list`), and
+   `dial launch Netflix` opened the app on the TV.
 
 **Ruled out on this unit (tested):**
 - **Google Cast** — no `_googlecast._tcp` advertised; port 8009 is Amazon Fling.
