@@ -15,7 +15,7 @@ Listening sockets (`0.0.0.0` / `::`, i.e. reachable from the LAN):
 | Port        | Proto | Service / package                                   | Usable from code |
 |-------------|-------|-----------------------------------------------------|------------------|
 | 5555        | tcp   | ADB (`adbd`)                                        | yes — primary control path |
-| 8009        | tcp   | Google Cast (`FireTVDefaultMediaReceiver`)          | yes — `pychromecast` |
+| 8009        | tcp   | `FireTVDefaultMediaReceiver` — **unverified**. 8009 is the Chromecast port, but Fire TV does not officially support Google Cast; this is likely Amazon's *Fling* receiver, not Cast. | unknown until tested |
 | 7000        | tcp   | AirPlay receiver (`com.apple.airplay.amazon.airplay`, `EniraService`) | yes — AirPlay clients |
 | 1900        | udp   | DIAL / SSDP (`com.amazon.dialservice`)              | yes — DIAL REST, app launch by name |
 | 5353        | udp   | mDNS (Cast / AirPlay / Whisperplay advertisement)   | discovery |
@@ -75,8 +75,10 @@ documentation artifact rather than a local control vector.
 1. **ADB** (port 5555) — working today. Remote keys, launch apps, inspect state,
    screenshots, and wake from sleep (`input keyevent WAKEUP`). See the `toshiba_tv`
    package in this repo.
-2. **Google Cast** (`pychromecast`) — playback + volume, no ADB.
-3. **DIAL** — launch streaming apps by name over HTTP.
+2. **DIAL** — launch streaming apps by name over HTTP. Likely works (Fire TV
+   supports DIAL) but not yet verified on this unit.
+3. **Google Cast** (`pychromecast`) — **unverified, probably not Cast.** See the port
+   table; port 8009 is likely Amazon Fling. Test before relying on it.
 
 **Not viable on this unit:** Matter (Casting-only, see above). The `toshiba_tv.matter`
 module is kept as a generic python-matter-server client but does not apply to this TV.

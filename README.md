@@ -38,7 +38,9 @@ python -m toshiba_tv.cli --host 192.168.1.50 dial launch YouTube
 python -m toshiba_tv.cli --host 192.168.1.50 dial stop YouTube
 ```
 
-**Google Cast** — playback + volume (needs `pip install PyChromecast`):
+**Google Cast** — **unverified on this TV.** Port 8009 is open but Fire TV does not
+officially support Google Cast; it is probably Amazon's Fling receiver. Try it, but
+expect `cast status` may fail to connect (needs `pip install PyChromecast`):
 ```
 python -m toshiba_tv.cli --host 192.168.1.50 cast status
 python -m toshiba_tv.cli --host 192.168.1.50 cast vol 0.3
