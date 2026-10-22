@@ -6,6 +6,7 @@ app. Works with no ADB and no extra dependencies.
 """
 import re
 import socket
+import urllib.error
 import urllib.request
 
 SSDP_ADDR = ("239.255.255.250", 1900)
@@ -90,10 +91,13 @@ class Dial:
         for a in apps:
             try:
                 xml = self.status(a)
-                m = re.search(r'state="?(\w+)"?', xml)
+                # DIAL app-info XML carries <state>running|stopped|installable</state>
+                m = re.search(r"<state>\s*(\w+)", xml) or re.search(r'state="(\w+)"', xml)
                 out[a] = m.group(1) if m else "unknown"
             except urllib.error.HTTPError as e:
-                out[a] = "not-found" if e.code == 404 else f"http-{e.code}"
+                # 403 on GET is YouTube's known DIAL quirk; the app is present and
+                # POST /YouTube (launch) still works.
+                out[a] = "not-found" if e.code == 404 else ("present-403" if e.code == 403 else f"http-{e.code}")
             except Exception as e:
                 out[a] = f"error:{type(e).__name__}"
         return out

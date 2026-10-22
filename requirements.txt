@@ -1,6 +1,4 @@
 adb-shell>=0.4.4
 cryptography>=42
-# optional, for the cast module:
-# PyChromecast
 # optional, for the matter module (also needs python-matter-server running):
 # websocket-client

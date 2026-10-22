@@ -15,9 +15,9 @@ Listening sockets (`0.0.0.0` / `::`, i.e. reachable from the LAN):
 | Port        | Proto | Service / package                                   | Usable from code |
 |-------------|-------|-----------------------------------------------------|------------------|
 | 5555        | tcp   | ADB (`adbd`)                                        | yes — primary control path |
-| 8009        | tcp   | `FireTVDefaultMediaReceiver` — **unverified**. 8009 is the Chromecast port, but Fire TV does not officially support Google Cast; this is likely Amazon's *Fling* receiver, not Cast. | unknown until tested |
+| 8009        | tcp   | `FireTVDefaultMediaReceiver` — Amazon **Fling** receiver. **Not Google Cast**: an mDNS browse shows no `_googlecast._tcp` from the TV. | no (proprietary) |
 | 7000        | tcp   | AirPlay receiver (`com.apple.airplay.amazon.airplay`, `EniraService`) | yes — AirPlay clients |
-| 1900        | udp   | DIAL / SSDP (`com.amazon.dialservice`)              | yes — DIAL REST, app launch by name |
+| 1900        | udp   | DIAL / SSDP (`com.amazon.dialservice`)              | **yes — verified live.** REST endpoint answers per-app queries; see DIAL notes below. |
 | 5353        | udp   | mDNS (Cast / AirPlay / Whisperplay advertisement)   | discovery |
 | 60000       | tcp   | WhisperLink (`com.amazon.whisperlink.core.android`) | Amazon proprietary (Fire TV phone-remote app) |
 | 5541 / 5550 | udp   | WhisperPlay discovery                               | Amazon proprietary |
@@ -75,13 +75,32 @@ documentation artifact rather than a local control vector.
 1. **ADB** (port 5555) — working today. Remote keys, launch apps, inspect state,
    screenshots, and wake from sleep (`input keyevent WAKEUP`). See the `toshiba_tv`
    package in this repo.
-2. **DIAL** — launch streaming apps by name over HTTP. Likely works (Fire TV
-   supports DIAL) but not yet verified on this unit.
-3. **Google Cast** (`pychromecast`) — **unverified, probably not Cast.** See the port
-   table; port 8009 is likely Amazon Fling. Test before relying on it.
+2. **DIAL** — launch streaming apps by name over HTTP. **Verified on this unit:**
+   the endpoint is live and answers per-app queries (`dial list`).
 
-**Not viable on this unit:** Matter (Casting-only, see above). The `toshiba_tv.matter`
-module is kept as a generic python-matter-server client but does not apply to this TV.
+**Ruled out on this unit (tested):**
+- **Google Cast** — no `_googlecast._tcp` advertised; port 8009 is Amazon Fling.
+  The former `cast` module was removed.
+- **Matter** — Casting-only, see above.
+
+The `toshiba_tv.matter` module is kept only as a generic python-matter-server client
+for devices that *are* commissionable; it does not apply to this TV.
+
+## DIAL notes (from a live `dial list`)
+
+- `Netflix` → reports a state (`running`/`stopped`) — fully working.
+- `YouTube` → HTTP **403** on GET. This is YouTube's known DIAL behaviour (it
+  refuses status queries without its own headers); the app is present and
+  `POST /YouTube` (launch) still works. Reported as `present-403`.
+- PrimeVideo / Hulu / Disney / HBOMax / Max → 404: those apps don't register a DIAL
+  name on Fire TV. Launch them over ADB instead (`launch <package>`).
+
+## mDNS note
+
+A LAN-wide `dns-sd` browse showed `_amzn-wplay._tcp` (WhisperPlay — the TV),
+`_airplay._tcp` (the TV), and also `_matter._tcp` / `_matterd._udp`. The Matter
+records were **not attributed to the TV's IP** in that browse and may belong to another
+device on the network; they are not evidence the TV is commissionable.
 
 ## Scope / safety
 

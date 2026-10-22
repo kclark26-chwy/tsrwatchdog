@@ -5,7 +5,6 @@ ADB commands (need --host and ADB debugging on):
 No-ADB commands (standard LAN protocols):
   discover           SSDP + port probe
   dial  ...          DIAL: list/launch/stop streaming apps over HTTP
-  cast  ...          Google Cast: status/volume/play (needs PyChromecast)
 """
 import argparse
 import json
@@ -35,9 +34,6 @@ def main(argv=None):
 
     d = sub.add_parser("dial"); d.add_argument("action", choices=["list", "launch", "stop", "status"])
     d.add_argument("app", nargs="?")
-    c = sub.add_parser("cast"); c.add_argument("action", choices=["status", "vol", "mute", "unmute", "play", "pause", "stop", "quit"])
-    c.add_argument("value", nargs="?", help="volume 0-1 for `vol`")
-
     m = sub.add_parser("matter")
     m.add_argument("action", choices=["commission", "nodes", "node", "on", "off", "toggle", "play", "pause", "stop", "key"])
     m.add_argument("value", nargs="?", help="setup code for `commission`, key name for `key`")
@@ -51,8 +47,6 @@ def main(argv=None):
         return
     if a.cmd == "dial":
         _dial(a); return
-    if a.cmd == "cast":
-        _cast(a); return
     if a.cmd == "matter":
         _matter(a); return
 
@@ -97,23 +91,6 @@ def _dial(a):
         print("HTTP", dial.launch(a.app))
     elif a.action == "stop":
         print("HTTP", dial.stop(a.app))
-
-
-def _cast(a):
-    from .cast import Cast
-    if not a.host:
-        raise SystemExit("--host is required for cast")
-    cast = Cast.connect(a.host)
-    if a.action == "status":
-        print(json.dumps(cast.status(), indent=2))
-    elif a.action == "vol":
-        cast.set_volume(float(a.value))
-    elif a.action == "mute":
-        cast.mute(True)
-    elif a.action == "unmute":
-        cast.mute(False)
-    elif a.action in ("play", "pause", "stop", "quit"):
-        getattr(cast, a.action)()
 
 
 def _matter(a):

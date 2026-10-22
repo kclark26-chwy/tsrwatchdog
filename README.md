@@ -31,20 +31,13 @@ python -m toshiba_tv.cli --host 192.168.1.50 pull /system/.../base.apk devicecon
 These use standard LAN protocols the TV already speaks, so they work even with
 ADB debugging off.
 
-**DIAL** — launch/stop streaming apps by name over HTTP:
+**DIAL** — launch/stop streaming apps by name over HTTP (verified on this TV).
+Netflix and YouTube register DIAL names; most other apps don't — launch those over
+ADB with `launch <package>`:
 ```
 python -m toshiba_tv.cli --host 192.168.1.50 dial list
 python -m toshiba_tv.cli --host 192.168.1.50 dial launch YouTube
 python -m toshiba_tv.cli --host 192.168.1.50 dial stop YouTube
-```
-
-**Google Cast** — **unverified on this TV.** Port 8009 is open but Fire TV does not
-officially support Google Cast; it is probably Amazon's Fling receiver. Try it, but
-expect `cast status` may fail to connect (needs `pip install PyChromecast`):
-```
-python -m toshiba_tv.cli --host 192.168.1.50 cast status
-python -m toshiba_tv.cli --host 192.168.1.50 cast vol 0.3
-python -m toshiba_tv.cli --host 192.168.1.50 cast pause
 ```
 
 **Matter — does not apply to this TV.** Fire TV's Matter support is *Matter Casting*
